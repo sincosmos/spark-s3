@@ -22,5 +22,5 @@ spark-submit \
 --conf spark.rpc.message.maxSize=200 \
 --conf spark.core.connection.ack.wait.timeout=800 \
 --conf spark.sql.codegen.wholeStage=false \
-n9-jdcloud-1.0-SNAPSHOT.jar
+n9-jdcloud-1.0-SNAPSHOT-jar-with-dependencies.jar
 
