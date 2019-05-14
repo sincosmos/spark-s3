@@ -12,7 +12,7 @@ import java.util.List;
 public class JDCloudSparkWriter {
     private String s3Protocol = "s3a://";
     private String s3Bucket = "ads-model-user1";
-    private String s3Path = "/kleguan";
+    private String s3Path = "/test-java-";
     private SparkSession sparkSession(){
         SparkSession spark = SparkSession.builder().enableHiveSupport()
                 .config("spark.speculation", "true")
@@ -61,14 +61,17 @@ public class JDCloudSparkWriter {
         JDCloudSparkWriter sparkWriter = new JDCloudSparkWriter();
         SparkSession spark = sparkWriter.sparkSession();
 
-        /*Dataset<Row> df = spark.sql("select * from model.dmp_user_store_label_orc " +
-                "where dt='2019-05-13'");*/
-        Dataset<Row> df = sparkWriter.sampleDataset(spark);
+        Dataset<Row> df = spark.sql("select * from model.feature_20190507_d00420fa718b11e9a047fa163e83229f");
+        //Dataset<Row> df = sparkWriter.sampleDataset(spark);
 
-        df.show();
-
+        //df.show();
+        String path = sparkWriter.s3Protocol + sparkWriter.s3Bucket + sparkWriter.s3Path + System.currentTimeMillis();
+        System.out.println(path);
+        long t1 = System.currentTimeMillis();
         df.write().format("csv").option("header","true").mode("overwrite")
-                .save(sparkWriter.s3Protocol + sparkWriter.s3Bucket + sparkWriter.s3Path);
+                .save(path);
+        long t2 = System.currentTimeMillis();
+        System.out.println("time consuming: " + (t2-t1)/1000 + "s");
         spark.stop();
     }
 }
