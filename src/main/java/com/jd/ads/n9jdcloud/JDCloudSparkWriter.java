@@ -1,9 +1,7 @@
 package com.jd.ads.n9jdcloud;
 
-import org.apache.spark.sql.Dataset;
-import org.apache.spark.sql.Row;
-import org.apache.spark.sql.RowFactory;
-import org.apache.spark.sql.SparkSession;
+import org.apache.spark.SparkContext;
+import org.apache.spark.sql.*;
 import org.apache.spark.sql.types.DataTypes;
 import org.apache.spark.sql.types.StructField;
 import org.apache.spark.sql.types.StructType;
@@ -16,17 +14,20 @@ public class JDCloudSparkWriter {
     private String s3Bucket = "ads-model-user1";
     private String s3Path = "/kleguan";
     private SparkSession sparkSession(){
-        return SparkSession.builder().enableHiveSupport()
+        SparkSession spark = SparkSession.builder().enableHiveSupport()
                 .config("spark.speculation", "true")
                 .config("spark.speculation.quantile", 0.95)
                 .config("hive.exec.orc.splits.strategy", "BI")
                 .config("hive.exec.dynamic.partition", "true")
                 .config("hive.exec.dynamic.partition.mode", "nonstrict")
-                .config("spark.hadoop.mapreduce.fileoutputcommitter.algorithm.version", "2")
-                .config("fs.s3a.awsAccessKeyId", "54DF7BD5FEBC058BA92CAEAD7562762F")
-                .config("fs.s3a.awsSecretAccessKey", "FA6244141F88CC479BE59A6531E3BB0D")
                 .getOrCreate();
+        spark.sparkContext().hadoopConfiguration().set("fs.s3a.access.key","54DF7BD5FEBC058BA92CAEAD7562762F");
+        spark.sparkContext().hadoopConfiguration().set("fs.s3a.secret.key","FA6244141F88CC479BE59A6531E3BB0D");
+        spark.sparkContext().hadoopConfiguration().set("fs.s3a.impl","org.apache.hadoop.fs.s3a.S3AFileSystem");
+        spark.sparkContext().hadoopConfiguration().set("fs.s3a.endpoint","http://s3.cn-north-1-nat.jdcloudcs.com");
+        return spark;
     }
+
 
     private Dataset<Row> sampleDataset(SparkSession spark){
         List<StructField> fields = new ArrayList<>();

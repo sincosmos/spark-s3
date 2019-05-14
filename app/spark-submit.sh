@@ -21,6 +21,7 @@ spark-submit \
 --conf spark.default.parallelism=1000 \
 --conf spark.rpc.message.maxSize=200 \
 --conf spark.core.connection.ack.wait.timeout=800 \
+--conf spark.hadoop.mapreduce.fileoutputcommitter.algorithm.version=2 \
 --conf spark.sql.codegen.wholeStage=false \
 n9-jdcloud-1.0-SNAPSHOT-jar-with-dependencies.jar
 
