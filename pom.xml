@@ -21,13 +21,21 @@
         <spark.version>2.3.0</spark.version>
         <hadoop.version>2.7.1</hadoop.version>
         <fastjson.version>1.2.47</fastjson.version>
+        <aws.sdk.version>1.7.4</aws.sdk.version>
+        <aws.s3.sdk.version>1.11.490</aws.s3.sdk.version>
     </properties>
 
     <dependencies>
-        <dependency>
+        <!--<dependency>
             <groupId>com.amazonaws</groupId>
             <artifactId>aws-java-sdk</artifactId>
-            <version>1.7.4</version>
+            <version>${aws.sdk.version}</version>
+        </dependency>-->
+
+        <dependency>
+            <groupId>com.amazonaws</groupId>
+            <artifactId>aws-java-sdk-s3</artifactId>
+            <version>${aws.s3.sdk.version}</version>
         </dependency>
 
 
