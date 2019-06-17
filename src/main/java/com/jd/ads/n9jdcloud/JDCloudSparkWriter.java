@@ -10,23 +10,17 @@ import org.apache.spark.sql.types.StructType;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.ResourceBundle;
 
 public class JDCloudSparkWriter {
-    private String s3Protocol = "s3a://";
-    private String s3Bucket = "ads-model-user1";
-    private String s3Path = "/test-java-";
+    private static ResourceBundle resource = ResourceBundle.getBundle("config");
+
     private SparkSession sparkSession(){
-        SparkSession spark = SparkSession.builder().enableHiveSupport()
-                .config("spark.speculation", "true")
-                .config("spark.speculation.quantile", 0.95)
-                .config("hive.exec.orc.splits.strategy", "BI")
-                .config("hive.exec.dynamic.partition", "true")
-                .config("hive.exec.dynamic.partition.mode", "nonstrict")
-                .getOrCreate();
-        spark.sparkContext().hadoopConfiguration().set("fs.s3a.access.key","54DF7BD5FEBC058BA92CAEAD7562762F");
-        spark.sparkContext().hadoopConfiguration().set("fs.s3a.secret.key","FA6244141F88CC479BE59A6531E3BB0D");
-        spark.sparkContext().hadoopConfiguration().set("fs.s3a.impl","org.apache.hadoop.fs.s3a.S3AFileSystem");
-        spark.sparkContext().hadoopConfiguration().set("fs.s3a.endpoint","http://s3.cn-north-1-nat.jdcloudcs.com");
+        SparkSession spark = SparkSession.builder().getOrCreate();
+        spark.sparkContext().hadoopConfiguration().set("fs.s3a.access.key",resource.getString("fs.s3a.access.key"));
+        spark.sparkContext().hadoopConfiguration().set("fs.s3a.secret.key",resource.getString("fs.s3a.secret.key"));
+        spark.sparkContext().hadoopConfiguration().set("fs.s3a.impl",resource.getString("fs.s3a.impl"));
+        spark.sparkContext().hadoopConfiguration().set("fs.s3a.endpoint",resource.getString("fs.s3a.endpoint.external"));
         return spark;
     }
 
@@ -63,11 +57,12 @@ public class JDCloudSparkWriter {
         JDCloudSparkWriter sparkWriter = new JDCloudSparkWriter();
         SparkSession spark = sparkWriter.sparkSession();
 
-        Dataset<Row> df = spark.sql("select * from model.feature_20190507_d00420fa718b11e9a047fa163e83229f");
-        //Dataset<Row> df = sparkWriter.sampleDataset(spark);
+        //Dataset<Row> df = spark.sql("select * from model.feature_20190507_d00420fa718b11e9a047fa163e83229f");
+        Dataset<Row> df = sparkWriter.sampleDataset(spark);
 
         //df.show();
-        String path = sparkWriter.s3Protocol + sparkWriter.s3Bucket + sparkWriter.s3Path + System.currentTimeMillis();
+        String path = resource.getString("cloud.protocol")
+                + resource.getString("cloud.bucket") + "test" + System.currentTimeMillis();
         System.out.println(path);
         long t1 = System.currentTimeMillis();
         df.write().format("csv").option("header","true").mode("overwrite")
