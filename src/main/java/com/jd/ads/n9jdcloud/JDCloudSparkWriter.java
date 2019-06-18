@@ -1,5 +1,6 @@
 package com.jd.ads.n9jdcloud;
 
+import org.apache.spark.SparkConf;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 import org.apache.spark.sql.RowFactory;
@@ -16,11 +17,15 @@ public class JDCloudSparkWriter {
     private static ResourceBundle resource = ResourceBundle.getBundle("config");
 
     private SparkSession sparkSession(){
-        SparkSession spark = SparkSession.builder().getOrCreate();
+        SparkConf config = new SparkConf()
+                .setMaster("local")
+                .setAppName("local-debugger");
+        SparkSession spark = SparkSession.builder().config(config).getOrCreate();
         spark.sparkContext().hadoopConfiguration().set("fs.s3a.access.key",resource.getString("fs.s3a.access.key"));
         spark.sparkContext().hadoopConfiguration().set("fs.s3a.secret.key",resource.getString("fs.s3a.secret.key"));
         spark.sparkContext().hadoopConfiguration().set("fs.s3a.impl",resource.getString("fs.s3a.impl"));
         spark.sparkContext().hadoopConfiguration().set("fs.s3a.endpoint",resource.getString("fs.s3a.endpoint.external"));
+        //spark.sparkContext().hadoopConfiguration().set("com.amazonaws.services.s3.disableGetObjectMD5Validation","true");
         return spark;
     }
 
@@ -62,11 +67,12 @@ public class JDCloudSparkWriter {
 
         //df.show();
         String path = resource.getString("cloud.protocol")
-                + resource.getString("cloud.bucket") + "test" + System.currentTimeMillis();
+                + resource.getString("cloud.bucket") + "/test";
         System.out.println(path);
         long t1 = System.currentTimeMillis();
         df.write().format("csv").option("header","true").mode("overwrite")
                 .save(path);
+        //df.show();
         long t2 = System.currentTimeMillis();
         System.out.println("time consuming: " + (t2-t1)/1000 + "s");
         spark.stop();
