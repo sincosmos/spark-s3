@@ -17,9 +17,7 @@ public class JDCloudSparkWriter {
     private static ResourceBundle resource = ResourceBundle.getBundle("config");
 
     private SparkSession sparkSession(){
-        SparkConf config = new SparkConf()
-                .setMaster("local")
-                .setAppName("local-debugger");
+        SparkConf config = new SparkConf();
         SparkSession spark = SparkSession.builder().config(config).getOrCreate();
         spark.sparkContext().hadoopConfiguration().set("fs.s3a.access.key",resource.getString("fs.s3a.access.key"));
         spark.sparkContext().hadoopConfiguration().set("fs.s3a.secret.key",resource.getString("fs.s3a.secret.key"));
@@ -67,7 +65,7 @@ public class JDCloudSparkWriter {
 
         //df.show();
         String path = resource.getString("cloud.protocol")
-                + resource.getString("cloud.bucket") + "/test1";
+                + resource.getString("cloud.bucket") + "/test2";
         System.out.println(path);
         long t1 = System.currentTimeMillis();
         df.write().format("csv").option("header","true").mode("overwrite")
