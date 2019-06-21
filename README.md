@@ -9,3 +9,6 @@
 spark version 2.4.3
 hadoop version 2.7.3
 aws-java-sdk 1.7.4
+
+### 解决 spark 写入 s3 问题
+

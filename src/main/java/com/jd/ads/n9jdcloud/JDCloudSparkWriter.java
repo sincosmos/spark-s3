@@ -67,7 +67,7 @@ public class JDCloudSparkWriter {
 
         //df.show();
         String path = resource.getString("cloud.protocol")
-                + resource.getString("cloud.bucket") + "/test";
+                + resource.getString("cloud.bucket") + "/test1";
         System.out.println(path);
         long t1 = System.currentTimeMillis();
         df.write().format("csv").option("header","true").mode("overwrite")
